@@ -6,6 +6,7 @@ import (
 
 	tokenApp "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/application/token"
 	userApp "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/application/user"
+	cryptRepo "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/crypt"
 	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/db/postgres"
 	jwtRepo "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/jwt"
 	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/config"
@@ -27,17 +28,20 @@ func main() {
 		log.Fatalf("Ошибка миграции базы данных: %v", err)
 	}
 
-	userDb := postgres.NewPostgresMemoryRepository(gorm.DB)
-	userApp := userApp.NewUserApp(userDb)
+	userRepo := postgres.NewPostgresMemoryRepository(gorm.DB)
+	tokenRepo := jwtRepo.NewJWTTokenRepository(cfg.JWT)
+	passwordRepo := cryptRepo.NewCryptRepository()
 
-	tokenDb := jwtRepo.NewJWTTokenRepository(cfg.JWT)
-	tokenApp := tokenApp.NewTokenApp(tokenDb)
+	tokenApp := tokenApp.NewTokenApp(tokenRepo)
+	userApp := userApp.NewUserApp(userRepo, tokenRepo, passwordRepo)
 
-	runGRPCServer(userApp, tokenApp, cfg.Port)
+	runGRPCServer(userApp, tokenApp)
 }
 
-func runGRPCServer(userApp *userApp.UserApp, tokenApp *tokenApp.TokenApp, port string) {
-	lis, err := net.Listen("tcp", ":" + port)
+func runGRPCServer(userApp *userApp.UserApp, tokenApp *tokenApp.TokenApp) {
+	cfg := config.LoadConfigFromEnv()
+
+	lis, err := net.Listen("tcp", ":" + cfg.Port)
 	if err != nil {
 		log.Fatalf("Ошибка запуска сервера: %v", err)
 	}

@@ -20,3 +20,23 @@ func NewPostgresMemoryRepository(db *gorm.DB) *PostgresMemoryRepository {
 func (r *PostgresMemoryRepository) CreateUser(user *domain.User) error {
 	return r.db.Create(user).Error
 }
+
+func (r *PostgresMemoryRepository) GetUserByUUID(uuid string) (*domain.User, error) {
+	var user domain.User
+
+	if err := r.db.Where("uuid = ?", uuid).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (r *PostgresMemoryRepository) GetUserByEmail(email string) (*domain.User, error) {
+	var user domain.User
+
+	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}

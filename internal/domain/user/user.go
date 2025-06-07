@@ -1,11 +1,9 @@
 package domain
 
 import (
-	"log"
 	"time"
 
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -17,16 +15,10 @@ type User struct {
 }
 
 func NewUser(email, password string) *User {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-
-	if err != nil {
-		log.Fatalf("Ошибка хеширования пароля: %v", err)
-	}
-
 	return &User{
 		UUID:      uuid.New().String(),
 		Email:     email,
-		Password:  string(hashedPassword),
+		Password:  password,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}

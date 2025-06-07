@@ -59,3 +59,17 @@ func (r *JWTTokenRepository) CreateToken(accessPayload *domain.AccessTokenClaim,
 		RefreshToken: refreshToken,
 	}, nil
 }
+
+func (r *JWTTokenRepository) ParseToken(token string) (*domain.AccessTokenClaim, error) {
+	claims := &AccessTokenClaims{}
+
+	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(r.cfg.SecretKey), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &claims.AccessTokenClaim, nil
+}

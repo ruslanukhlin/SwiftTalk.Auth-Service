@@ -22,3 +22,7 @@ func (a *TokenApp) CreateToken(uuid string) (*domain.TokenPayload, error) {
 
 	return a.tokenRepo.CreateToken(accessPayload, refreshPayload)
 }
+
+func (a *TokenApp) ParseToken(token string) (*domain.AccessTokenClaim, error) {
+	return a.tokenRepo.ParseToken(token)
+}
