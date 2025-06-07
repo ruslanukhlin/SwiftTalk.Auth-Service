@@ -1,11 +1,12 @@
 package postgres
 
 import (
-	domain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user"
+	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user"
+	passwordDomain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user/password"
 	"gorm.io/gorm"
 )
 
-var _ domain.UserRepository = &PostgresMemoryRepository{}
+var _ user.UserRepository = &PostgresMemoryRepository{}
 
 type PostgresMemoryRepository struct {
 	db *gorm.DB
@@ -17,26 +18,52 @@ func NewPostgresMemoryRepository(db *gorm.DB) *PostgresMemoryRepository {
 	}
 }
 
-func (r *PostgresMemoryRepository) CreateUser(user *domain.User) error {
-	return r.db.Create(user).Error
+func (r *PostgresMemoryRepository) CreateUser(user *user.User) error {
+	userDb := &User{
+		UUID: user.UUID,
+		Email: user.Email.Value,
+		Password: user.Password.Value,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+	
+	return r.db.Create(&userDb).Error
 }
 
-func (r *PostgresMemoryRepository) GetUserByUUID(uuid string) (*domain.User, error) {
-	var user domain.User
+func (r *PostgresMemoryRepository) GetUserByUUID(uuid string) (*user.User, error) {
+	var userDb User
 
-	if err := r.db.Where("uuid = ?", uuid).First(&user).Error; err != nil {
+	if err := r.db.Where("uuid = ?", uuid).First(&userDb).Error; err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	user := getUserFromDb(userDb)
+
+	return user, nil
 }
 
-func (r *PostgresMemoryRepository) GetUserByEmail(email string) (*domain.User, error) {
-	var user domain.User
+func (r *PostgresMemoryRepository) GetUserByEmail(email string) (*user.User, error) {
+	var userDb User
 
-	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
+	if err := r.db.Where("email = ?", email).First(&userDb).Error; err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	user := getUserFromDb(userDb)
+
+	return user, nil
+}
+
+func getUserFromDb(userDb User) *user.User {
+	return &user.User{
+		UUID: userDb.UUID,
+		Email: user.Email{
+			Value: userDb.Email,
+		},
+		Password: passwordDomain.HashPassword{
+			Value: userDb.Password,
+		},
+		CreatedAt: userDb.CreatedAt,
+		UpdatedAt: userDb.UpdatedAt,
+	}
 }

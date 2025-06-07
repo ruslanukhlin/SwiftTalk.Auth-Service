@@ -1,11 +1,4 @@
-package domain
-
-type UserService interface {
-	Register(user *User) error
-	Login(email, password string) (*User, error)
-	VerifyToken(token string) (*User, error)
-	RefreshToken(refreshToken string) (*User, error)
-}
+package user
 
 type UserRepository interface {
 	CreateUser(user *User) error

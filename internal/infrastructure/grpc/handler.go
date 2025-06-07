@@ -1,47 +1,29 @@
-package userGRPC
+package authGRPC
 
 import (
 	"context"
 
-	userApp "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/application/token"
-	tokenApp "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/application/user"
-	userDomain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user"
+	authApp "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/application/auth"
 	pb "github.com/ruslanukhlin/SwiftTalk.common/gen/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-var (
-	ErrRegisterUser = status.Error(codes.Internal, "ошибка при регистрации пользователя")
-	ErrCreateToken = status.Error(codes.Internal, "ошибка при создании токена")
-	ErrHashPassword = status.Error(codes.Internal, "ошибка при хешировании пароля")
-	ErrLogin = status.Error(codes.Unauthenticated, "неверный email или пароль")
-	ErrVerifyToken = status.Error(codes.Unauthenticated, "неверный токен")
-	ErrRefreshToken = status.Error(codes.Unauthenticated, "неверный refresh токен")
-)
-
 type UserGRPCHandler struct {
 	pb.UnimplementedAuthServiceServer
-	userApp *tokenApp.UserApp
-	tokenApp *userApp.TokenApp
+	authApp authApp.AuthService
 }
 
-func NewUserGRPCHandler(userApp *tokenApp.UserApp, tokenApp *userApp.TokenApp) *UserGRPCHandler {
+func NewUserGRPCHandler(authApp authApp.AuthService) *UserGRPCHandler {
 	return &UserGRPCHandler{
-		userApp: userApp,
-		tokenApp: tokenApp,
+		authApp: authApp,
 	}
 }
 
 func (h *UserGRPCHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	user := userDomain.NewUser(req.Email, req.Password)
-	if err := h.userApp.Register(user); err != nil {
-		return nil, ErrRegisterUser
-	}
-
-	tokens, err := h.tokenApp.CreateToken(user.UUID)
+	tokens, err := h.authApp.Register(req.Email, req.Password)
 	if err != nil {
-		return nil, ErrCreateToken
+		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
 
 	return &pb.RegisterResponse{
@@ -51,14 +33,9 @@ func (h *UserGRPCHandler) Register(ctx context.Context, req *pb.RegisterRequest)
 }
 
 func (h *UserGRPCHandler) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
-	user, err := h.userApp.Login(req.Email, req.Password)
+	tokens, err := h.authApp.Login(req.Email, req.Password)
 	if err != nil {
-		return nil, ErrLogin
-	}
-
-	tokens, err := h.tokenApp.CreateToken(user.UUID)
-	if err != nil {
-		return nil, ErrCreateToken
+		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
 
 	return &pb.LoginResponse{
@@ -68,10 +45,9 @@ func (h *UserGRPCHandler) Login(ctx context.Context, req *pb.LoginRequest) (*pb.
 }
 
 func (h *UserGRPCHandler) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest) (*pb.VerifyTokenResponse, error) {
-	user, err := h.userApp.VerifyToken(req.AccessToken)
-
+	user, err := h.authApp.VerifyToken(req.AccessToken)
 	if err != nil {
-		return nil, ErrVerifyToken
+		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
 
 	return &pb.VerifyTokenResponse{
@@ -81,14 +57,9 @@ func (h *UserGRPCHandler) VerifyToken(ctx context.Context, req *pb.VerifyTokenRe
 }
 
 func (h *UserGRPCHandler) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenResponse, error) {
-	user, err := h.userApp.RefreshToken(req.RefreshToken)
+	tokens, err := h.authApp.RefreshToken(req.RefreshToken)
 	if err != nil {
-		return nil, ErrRefreshToken
-	}
-
-	tokens, err := h.tokenApp.CreateToken(user.UUID)
-	if err != nil {
-		return nil, ErrCreateToken
+		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
 
 	return &pb.RefreshTokenResponse{

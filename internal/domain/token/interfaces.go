@@ -1,9 +1,4 @@
-package domain
-
-type TokenService interface {
-	CreateToken(uuid string) (*TokenPayload, error)
-	ParseToken(token string) (*AccessTokenClaim, error)
-}
+package token
 
 type TokenRepository interface {
 	CreateToken(accessPayload *AccessTokenClaim, refreshPayload *RefreshTokenClaim) (*TokenPayload, error)

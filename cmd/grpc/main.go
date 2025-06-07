@@ -4,17 +4,16 @@ import (
 	"log"
 	"net"
 
-	tokenApp "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/application/token"
-	userApp "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/application/user"
-	cryptRepo "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/crypt"
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/db/postgres"
-	jwtRepo "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/jwt"
 	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/config"
 	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/gorm"
+	pb "github.com/ruslanukhlin/SwiftTalk.common/gen/auth"
 	"google.golang.org/grpc"
 
-	userGRPC "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/grpc"
-	pb "github.com/ruslanukhlin/SwiftTalk.common/gen/auth"
+	authApp "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/application/auth"
+	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/db/postgres"
+	authGRPC "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/grpc"
+	jwtRepo "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/jwt"
+	passwordRepo "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/password"
 )
 
 func main() {
@@ -30,15 +29,14 @@ func main() {
 
 	userRepo := postgres.NewPostgresMemoryRepository(gorm.DB)
 	tokenRepo := jwtRepo.NewJWTTokenRepository(cfg.JWT)
-	passwordRepo := cryptRepo.NewCryptRepository()
+	passwordRepo := passwordRepo.NewPasswordRepo()
 
-	tokenApp := tokenApp.NewTokenApp(tokenRepo)
-	userApp := userApp.NewUserApp(userRepo, tokenRepo, passwordRepo)
+	authApp := authApp.NewAuthApp(userRepo, passwordRepo, tokenRepo)
 
-	runGRPCServer(userApp, tokenApp)
+	runGRPCServer(authApp)
 }
 
-func runGRPCServer(userApp *userApp.UserApp, tokenApp *tokenApp.TokenApp) {
+func runGRPCServer(authApp authApp.AuthService) {
 	cfg := config.LoadConfigFromEnv()
 
 	lis, err := net.Listen("tcp", ":" + cfg.Port)
@@ -46,7 +44,7 @@ func runGRPCServer(userApp *userApp.UserApp, tokenApp *tokenApp.TokenApp) {
 		log.Fatalf("Ошибка запуска сервера: %v", err)
 	}
 
-	userGRPCHandler := userGRPC.NewUserGRPCHandler(userApp, tokenApp)
+	userGRPCHandler := authGRPC.NewUserGRPCHandler(authApp)
 	grpcServer := grpc.NewServer()
 	pb.RegisterAuthServiceServer(grpcServer, userGRPCHandler)
 

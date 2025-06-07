@@ -4,11 +4,11 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	domain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/token"
+	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/token"
 	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/config"
 )
 
-var _ domain.TokenRepository = &JWTTokenRepository{}
+var _ token.TokenRepository = &JWTTokenRepository{}
 
 type JWTTokenRepository struct {
 	cfg *config.JWTConfig
@@ -16,19 +16,19 @@ type JWTTokenRepository struct {
 
 type AccessTokenClaims struct {
 	jwt.RegisteredClaims
-	domain.AccessTokenClaim
+	token.AccessTokenClaim
 }
 
 type RefreshTokenClaims struct {
 	jwt.RegisteredClaims
-	domain.RefreshTokenClaim
+	token.RefreshTokenClaim
 }
 
 func NewJWTTokenRepository(cfg *config.JWTConfig) *JWTTokenRepository {
 	return &JWTTokenRepository{cfg: cfg}
 }
 
-func (r *JWTTokenRepository) CreateToken(accessPayload *domain.AccessTokenClaim, refreshPayload *domain.RefreshTokenClaim) (*domain.TokenPayload, error) {
+func (r *JWTTokenRepository) CreateToken(accessPayload *token.AccessTokenClaim, refreshPayload *token.RefreshTokenClaim) (*token.TokenPayload, error) {
 	expiresAt := time.Now().Add(r.cfg.ExpiresAfter)
 	refreshExpiresAt := time.Now().Add(r.cfg.RefreshExpiresAfter)
 	
@@ -54,13 +54,13 @@ func (r *JWTTokenRepository) CreateToken(accessPayload *domain.AccessTokenClaim,
 		return nil, err
 	}
 
-	return &domain.TokenPayload{
+	return &token.TokenPayload{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
 }
 
-func (r *JWTTokenRepository) ParseToken(token string) (*domain.AccessTokenClaim, error) {
+func (r *JWTTokenRepository) ParseToken(token string) (*token.AccessTokenClaim, error) {
 	claims := &AccessTokenClaims{}
 
 	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
