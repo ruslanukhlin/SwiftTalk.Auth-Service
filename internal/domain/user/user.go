@@ -15,8 +15,8 @@ type User struct {
 	UpdatedAt time.Time
 }
 
-func NewUser(email string, password string, passwordRepo passwordDomain.PasswordRepository) (*User, error) {
-	emailValid, err := NewEmail(email)
+func NewUser(email string, password string, passwordRepo passwordDomain.PasswordRepository, userRepo UserRepository) (*User, error) {
+	emailValid, err := NewEmail(email, userRepo)
 	if err != nil {
 		return nil, err
 	}

@@ -30,7 +30,8 @@ type JWTConfig struct {
 
 type Config struct {
 	Mode     string
-	Port     string
+	PortGrpc     string
+	PortHttp     string
 	Postgres *PostgresConfig
 	JWT      *JWTConfig
 }
@@ -50,7 +51,8 @@ func LoadConfigFromEnv() *Config {
 
 	return &Config{
 		Mode:     os.Getenv("MODE"),
-		Port:     os.Getenv("PORT"),
+		PortGrpc:     os.Getenv("PORT_GRPC"),
+		PortHttp:     os.Getenv("PORT_HTTP"),
 		Postgres: &PostgresConfig{
 			Host:     os.Getenv("POSTGRES_HOST"),
 			Port:     os.Getenv("POSTGRES_PORT"),

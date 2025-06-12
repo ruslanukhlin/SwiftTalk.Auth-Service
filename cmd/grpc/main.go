@@ -39,7 +39,7 @@ func main() {
 func runGRPCServer(authApp authApp.AuthService) {
 	cfg := config.LoadConfigFromEnv()
 
-	lis, err := net.Listen("tcp", ":" + cfg.Port)
+	lis, err := net.Listen("tcp", ":" + cfg.PortGrpc)
 	if err != nil {
 		log.Fatalf("Ошибка запуска сервера: %v", err)
 	}

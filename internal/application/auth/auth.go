@@ -23,7 +23,7 @@ func NewAuthApp(userRepo userDomain.UserRepository, passwordRepo passwordDomain.
 }
 
 func (a *AuthApp) Register(email, password string) (tokens *tokenDomain.TokenPayload, err error) {
-	user, err := userDomain.NewUser(email, password, a.passwordRepo)
+	user, err := userDomain.NewUser(email, password, a.passwordRepo, a.userRepo)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,8 @@
 package postgres
 
 import (
+	"errors"
+
 	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user"
 	passwordDomain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user/password"
 	"gorm.io/gorm"
@@ -52,6 +54,19 @@ func (r *PostgresMemoryRepository) GetUserByEmail(email string) (*user.User, err
 	user := getUserFromDb(userDb)
 
 	return user, nil
+}
+
+func (r *PostgresMemoryRepository) IsEmailExists(email string) (bool, error) {
+	var userDb User
+
+	if err := r.db.Where("email = ?", email).First(&userDb).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return true, nil
 }
 
 func getUserFromDb(userDb User) *user.User {
