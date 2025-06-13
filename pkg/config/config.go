@@ -1,12 +1,14 @@
 package config
 
 import (
+	"crypto/rsa"
 	"errors"
 	"fmt"
 	"log"
 	"os"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 )
 var (
@@ -26,6 +28,8 @@ type JWTConfig struct {
 	SecretKey            string
 	ExpiresAfter         time.Duration
 	RefreshExpiresAfter  time.Duration
+	Issuer               string
+	Audience             string
 }
 
 type Config struct {
@@ -64,6 +68,8 @@ func LoadConfigFromEnv() *Config {
 			SecretKey:           os.Getenv("JWT_SECRET_KEY"),
 			ExpiresAfter:        expiresAfter,
 			RefreshExpiresAfter: refreshExpiresAfter,
+			Issuer:              os.Getenv("JWT_ISSUER"),
+			Audience:            os.Getenv("JWT_AUDIENCE"),
 		},
 	}
 }
@@ -73,4 +79,30 @@ func DNS(c *PostgresConfig) string {
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		c.Host, c.User, c.Password, c.DBName, c.Port,
 	)
+}
+
+func ParseKeys() (*rsa.PrivateKey, *rsa.PublicKey, error) {
+	var err error
+	var privateKey *rsa.PrivateKey
+	var publicKey *rsa.PublicKey
+
+	privateKeyBytes, err := os.ReadFile("config/keys/private.pem")
+	if err != nil {
+		return nil, nil, err
+	}
+	privateKey, err = jwt.ParseRSAPrivateKeyFromPEM(privateKeyBytes)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	publicKeyBytes, err := os.ReadFile("config/keys/public.pem")
+	if err != nil {
+		return nil, nil, err
+	}
+	publicKey, err = jwt.ParseRSAPublicKeyFromPEM(publicKeyBytes)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return privateKey, publicKey, nil
 }

@@ -27,11 +27,16 @@ func main() {
 		log.Fatalf("Ошибка миграции базы данных: %v", err)
 	}
 
-	userRepo := postgres.NewPostgresMemoryRepository(gorm.DB)
-	tokenRepo := jwtRepo.NewJWTTokenRepository(cfg.JWT)
-	passwordRepo := passwordRepo.NewPasswordRepo()
+	privateKey, publicKey, err := config.ParseKeys()
+	if err != nil {
+		log.Fatalf("Ошибка загрузки RSA ключей: %v", err)
+	}
 
-	authApp := authApp.NewAuthApp(userRepo, passwordRepo, tokenRepo)
+	userRepo := postgres.NewPostgresMemoryRepository(gorm.DB)
+	passwordRepo := passwordRepo.NewPasswordRepo()
+	tokenRepo := jwtRepo.NewJWTTokenRepository(privateKey, publicKey)
+
+	authApp := authApp.NewAuthApp(userRepo, passwordRepo, tokenRepo, cfg)
 
 	runGRPCServer(authApp)
 }
@@ -47,6 +52,7 @@ func runGRPCServer(authApp authApp.AuthService) {
 	userGRPCHandler := authGRPC.NewUserGRPCHandler(authApp)
 	grpcServer := grpc.NewServer()
 	pb.RegisterAuthServiceServer(grpcServer, userGRPCHandler)
+	defer grpcServer.GracefulStop()
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Ошибка grpc сервера: %v", err)

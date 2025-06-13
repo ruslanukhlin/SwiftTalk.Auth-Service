@@ -1,5 +1,12 @@
 package token
 
+import (
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/config"
+)
+
 type TokenType string
 
 const (
@@ -8,13 +15,13 @@ const (
 )
 
 type AccessTokenClaim struct {
-	UUID string
-	TokenType TokenType
+	jwt.RegisteredClaims
+	TokenType TokenType `json:"token_type"`
 }
 
 type RefreshTokenClaim struct {
-	UUID string
-	TokenType TokenType
+	jwt.RegisteredClaims
+	TokenType TokenType `json:"token_type"`
 }
 
 type TokenPayload struct {
@@ -22,16 +29,32 @@ type TokenPayload struct {
 	RefreshToken string
 }
 
-func NewAccessTokenClaim(uuid string) *AccessTokenClaim {
+func NewAccessTokenClaim(uuid string, cfg *config.Config) *AccessTokenClaim {
+	now := time.Now()
 	return &AccessTokenClaim{
-		UUID:      uuid,
 		TokenType: AccessToken,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "auth-service",
+			Subject:   uuid,
+			Audience:  jwt.ClaimStrings{"swift-talk"},
+			ExpiresAt: jwt.NewNumericDate(now.Add(15 * time.Minute)),
+			IssuedAt:  jwt.NewNumericDate(now),
+			NotBefore: jwt.NewNumericDate(now),
+		},
 	}
-}	
+}
 
-func NewRefreshTokenClaim(uuid string) *RefreshTokenClaim {
+func NewRefreshTokenClaim(uuid string, cfg *config.Config) *RefreshTokenClaim {
+	now := time.Now()
 	return &RefreshTokenClaim{
-		UUID:      uuid,
 		TokenType: RefreshToken,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "auth-service",
+			Subject:   uuid,
+			Audience:  jwt.ClaimStrings{"swift-talk"},
+			ExpiresAt: jwt.NewNumericDate(now.Add(24 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(now),
+			NotBefore: jwt.NewNumericDate(now),
+		},
 	}
 }

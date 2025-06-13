@@ -2,15 +2,18 @@ package bff
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/token"
 )
 
 type Handler struct {
 	authService *AuthService
+	jwtService token.TokenRepository
 }
 
-func NewHandler(authService *AuthService) *Handler {
+func NewHandler(authService *AuthService, jwtService token.TokenRepository) *Handler {
 	return &Handler{
 		authService: authService,
+		jwtService: jwtService,
 	}
 }
 
@@ -76,4 +79,16 @@ func (h *Handler) VerifyToken(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(response)
+}
+
+func (h *Handler) GetJWKS(c *fiber.Ctx) error {
+    jwks, err := h.jwtService.GetJWKS()
+    if err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error": "Failed to get JWKS",
+        })
+    }
+
+    c.Set("Content-Type", "application/json")
+    return c.Send(jwks)
 } 

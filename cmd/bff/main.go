@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/bff"
+	jwtRepo "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/jwt"
 	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/config"
 )
 
@@ -16,6 +17,15 @@ func main() {
 	cfg := config.LoadConfigFromEnv()
 
 	app := fiber.New()
+
+	// Инициализация RSA ключей для JWT
+	privateKey, publicKey, err := config.ParseKeys()
+	if err != nil {
+		log.Fatalf("Ошибка загрузки RSA ключей: %v", err)
+	}
+
+	// Инициализация JWT репозитория
+	tokenRepo := jwtRepo.NewJWTTokenRepository(privateKey, publicKey)
 
 	conn, err := grpc.NewClient(":" + cfg.PortGrpc, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -25,7 +35,7 @@ func main() {
 
 	authClient := pb.NewAuthServiceClient(conn)
 	authService := bff.NewAuthService(authClient)
-	handler := bff.NewHandler(authService)
+	handler := bff.NewHandler(authService, tokenRepo)
 
 	bff.RegisterRoutes(app, handler)
 
