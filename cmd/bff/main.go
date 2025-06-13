@@ -1,10 +1,17 @@
 package main
 
+// @title SwiftTalk Auth Service API
+// @version 1.0
+// @description API сервиса аутентификации для платформы SwiftTalk
+// @host localhost:8080
+// @BasePath /authService/
 import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	_ "github.com/ruslanukhlin/SwiftTalk.auth-service/docs"
 	pb "github.com/ruslanukhlin/SwiftTalk.common/gen/auth"
+	fiberSwagger "github.com/swaggo/fiber-swagger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -17,6 +24,9 @@ func main() {
 	cfg := config.LoadConfigFromEnv()
 
 	app := fiber.New()
+
+	// Swagger route
+	app.Get("/swagger/*", fiberSwagger.FiberWrapHandler())
 
 	// Инициализация RSA ключей для JWT
 	privateKey, publicKey, err := config.ParseKeys()

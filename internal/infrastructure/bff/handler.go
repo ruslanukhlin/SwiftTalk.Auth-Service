@@ -14,6 +14,11 @@ var (
 	ErrInvalidAccessToken = errors.New("access token не валидный")
 )
 
+// ErrorResponse представляет ответ с ошибкой
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
 type Handler struct {
 	authService *AuthService
 	jwtService token.TokenRepository
@@ -28,6 +33,17 @@ func NewHandler(authService *AuthService, jwtService token.TokenRepository, conf
 	}
 }
 
+// Register godoc
+// @Summary Регистрация нового пользователя
+// @Description Регистрирует нового пользователя и возвращает токены доступа
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param payload body RegisterPayload true "Данные для регистрации"
+// @Success 200 {object} TokenResponse "Успешная регистрация"
+// @Failure 400 {object} ErrorResponse "Ошибка в параметрах запроса"
+// @Failure 500 {object} ErrorResponse "Внутренняя ошибка сервера"
+// @Router /register [post]
 func (h *Handler) Register(c *fiber.Ctx) error {
 	payload := new(RegisterPayload)
 	if err := c.BodyParser(payload); err != nil {
@@ -44,6 +60,18 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 	return c.JSON(tokens)
 }
 
+// Login godoc
+// @Summary Вход в систему
+// @Description Аутентифицирует пользователя и возвращает токены доступа
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param payload body LoginPayload true "Данные для входа"
+// @Success 200 {object} TokenResponse "Успешный вход"
+// @Failure 400 {object} ErrorResponse "Ошибка в параметрах запроса"
+// @Failure 401 {string} string Jwt is expired
+// @Failure 500 {object} ErrorResponse "Внутренняя ошибка сервера"
+// @Router /login [post]
 func (h *Handler) Login(c *fiber.Ctx) error {
 	payload := new(LoginPayload)
 	if err := c.BodyParser(payload); err != nil {
@@ -71,6 +99,16 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 	return c.JSON(tokens)
 }
 
+// RefreshToken godoc
+// @Summary Обновление токена
+// @Description Обновляет access и refresh токены
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} TokenResponse "Успешное обновление токенов"
+// @Failure 401 {object} ErrorResponse "Невалидный refresh token"
+// @Failure 500 {object} ErrorResponse "Внутренняя ошибка сервера"
+// @Router /refresh [post]
 func (h *Handler) RefreshToken(c *fiber.Ctx) error {
 	refreshToken := c.Cookies("refresh_token")
 	if refreshToken == "" {
@@ -100,6 +138,16 @@ func (h *Handler) RefreshToken(c *fiber.Ctx) error {
 	return c.JSON(tokens)
 }
 
+// VerifyToken godoc
+// @Summary Проверка токена
+// @Description Проверяет валидность access token и возвращает информацию о пользователе
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} VerifyTokenResponse "Успешная проверка токена"
+// @Failure 401 {object} ErrorResponse "Невалидный access token"
+// @Failure 500 {object} ErrorResponse "Внутренняя ошибка сервера"
+// @Router /verify [get]
 func (h *Handler) VerifyToken(c *fiber.Ctx) error {
 	accessToken := c.Cookies("access_token")
 	if accessToken == "" {

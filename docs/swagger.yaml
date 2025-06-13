@@ -1,0 +1,153 @@
+basePath: /authService/
+definitions:
+  bff.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  bff.LoginPayload:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  bff.RegisterPayload:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  bff.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  bff.VerifyTokenResponse:
+    properties:
+      is_valid:
+        type: boolean
+      user_uuid:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API сервиса аутентификации для платформы SwiftTalk
+  title: SwiftTalk Auth Service API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Аутентифицирует пользователя и возвращает токены доступа
+      parameters:
+      - description: Данные для входа
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/bff.LoginPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный вход
+          schema:
+            $ref: '#/definitions/bff.TokenResponse'
+        "400":
+          description: Ошибка в параметрах запроса
+          schema:
+            $ref: '#/definitions/bff.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/bff.ErrorResponse'
+      summary: Вход в систему
+      tags:
+      - auth
+  /refresh:
+    post:
+      consumes:
+      - application/json
+      description: Обновляет access и refresh токены
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное обновление токенов
+          schema:
+            $ref: '#/definitions/bff.TokenResponse'
+        "401":
+          description: Невалидный refresh token
+          schema:
+            $ref: '#/definitions/bff.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/bff.ErrorResponse'
+      summary: Обновление токена
+      tags:
+      - auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Регистрирует нового пользователя и возвращает токены доступа
+      parameters:
+      - description: Данные для регистрации
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/bff.RegisterPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешная регистрация
+          schema:
+            $ref: '#/definitions/bff.TokenResponse'
+        "400":
+          description: Ошибка в параметрах запроса
+          schema:
+            $ref: '#/definitions/bff.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/bff.ErrorResponse'
+      summary: Регистрация нового пользователя
+      tags:
+      - auth
+  /verify:
+    get:
+      consumes:
+      - application/json
+      description: Проверяет валидность access token и возвращает информацию о пользователе
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешная проверка токена
+          schema:
+            $ref: '#/definitions/bff.VerifyTokenResponse'
+        "401":
+          description: Невалидный access token
+          schema:
+            $ref: '#/definitions/bff.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/bff.ErrorResponse'
+      summary: Проверка токена
+      tags:
+      - auth
+swagger: "2.0"
