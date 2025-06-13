@@ -35,7 +35,7 @@ func main() {
 
 	authClient := pb.NewAuthServiceClient(conn)
 	authService := bff.NewAuthService(authClient)
-	handler := bff.NewHandler(authService, tokenRepo)
+	handler := bff.NewHandler(authService, tokenRepo, cfg)
 
 	bff.RegisterRoutes(app, handler)
 
