@@ -34,10 +34,10 @@ func NewAccessTokenClaim(uuid string, cfg *config.Config) *AccessTokenClaim {
 	return &AccessTokenClaim{
 		TokenType: AccessToken,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "auth-service",
+			Issuer:    cfg.JWT.Issuer,
 			Subject:   uuid,
-			Audience:  jwt.ClaimStrings{"swift-talk"},
-			ExpiresAt: jwt.NewNumericDate(now.Add(15 * time.Minute)),
+			Audience:  jwt.ClaimStrings{cfg.JWT.Audience},
+			ExpiresAt: jwt.NewNumericDate(now.Add(cfg.JWT.ExpiresAfter)),
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
 		},
@@ -49,10 +49,10 @@ func NewRefreshTokenClaim(uuid string, cfg *config.Config) *RefreshTokenClaim {
 	return &RefreshTokenClaim{
 		TokenType: RefreshToken,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "auth-service",
+			Issuer:    cfg.JWT.Issuer,
 			Subject:   uuid,
-			Audience:  jwt.ClaimStrings{"swift-talk"},
-			ExpiresAt: jwt.NewNumericDate(now.Add(24 * time.Hour)),
+			Audience:  jwt.ClaimStrings{cfg.JWT.Audience},
+			ExpiresAt: jwt.NewNumericDate(now.Add(cfg.JWT.RefreshExpiresAfter)),
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
 		},
