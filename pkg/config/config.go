@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -14,6 +15,11 @@ import (
 var (
 	ErrParseJWTExpiresAt       = errors.New("failed to parse JWT_EXPIRES_AT duration")
 	ErrParseJWTRefreshExpiresAt = errors.New("failed to parse JWT_REFRESH_EXPIRES_AT duration") 
+)
+
+var (
+	once sync.Once
+	cfg *Config
 )
 
 type PostgresConfig struct {
@@ -41,37 +47,41 @@ type Config struct {
 }
 
 func LoadConfigFromEnv() *Config {
-	_ = godotenv.Load(".env.local")
+	once.Do(func() {
+		_ = godotenv.Load(".env.local")
 
-	expiresAfter, err := time.ParseDuration(os.Getenv("JWT_EXPIRES_AT"))
-	if err != nil {
-		log.Fatalf("%s: %v", ErrParseJWTExpiresAt.Error(), err)
-	}
+		expiresAfter, err := time.ParseDuration(os.Getenv("JWT_EXPIRES_AT"))
+		if err != nil {
+			log.Fatalf("%s: %v", ErrParseJWTExpiresAt.Error(), err)
+		}
 
-	refreshExpiresAfter, err := time.ParseDuration(os.Getenv("JWT_REFRESH_EXPIRES_AT"))
-	if err != nil {
-		log.Fatalf("%s: %v", ErrParseJWTRefreshExpiresAt.Error(), err)
-	}
+		refreshExpiresAfter, err := time.ParseDuration(os.Getenv("JWT_REFRESH_EXPIRES_AT"))
+		if err != nil {
+			log.Fatalf("%s: %v", ErrParseJWTRefreshExpiresAt.Error(), err)
+		}
 
-	return &Config{
-		Mode:     os.Getenv("MODE"),
-		PortGrpc:     os.Getenv("PORT_GRPC"),
-		PortHttp:     os.Getenv("PORT_HTTP"),
-		Postgres: &PostgresConfig{
-			Host:     os.Getenv("POSTGRES_HOST"),
-			Port:     os.Getenv("POSTGRES_PORT"),
-			User:     os.Getenv("POSTGRES_USER"),
-			Password: os.Getenv("POSTGRES_PASSWORD"),
-			DBName:   os.Getenv("POSTGRES_DB"),
-		},
-		JWT: &JWTConfig{
-			SecretKey:           os.Getenv("JWT_SECRET_KEY"),
-			ExpiresAfter:        expiresAfter,
-			RefreshExpiresAfter: refreshExpiresAfter,
-			Issuer:              os.Getenv("JWT_ISSUER"),
-			Audience:            os.Getenv("JWT_AUDIENCE"),
-		},
-	}
+		cfg = &Config{
+			Mode:     os.Getenv("MODE"),
+			PortGrpc:     os.Getenv("PORT_GRPC"),
+			PortHttp:     os.Getenv("PORT_HTTP"),
+			Postgres: &PostgresConfig{
+				Host:     os.Getenv("POSTGRES_HOST"),
+				Port:     os.Getenv("POSTGRES_PORT"),
+				User:     os.Getenv("POSTGRES_USER"),
+				Password: os.Getenv("POSTGRES_PASSWORD"),
+				DBName:   os.Getenv("POSTGRES_DB"),
+			},
+			JWT: &JWTConfig{
+				SecretKey:           os.Getenv("JWT_SECRET_KEY"),
+				ExpiresAfter:        expiresAfter,
+				RefreshExpiresAfter: refreshExpiresAfter,
+				Issuer:              os.Getenv("JWT_ISSUER"),
+				Audience:            os.Getenv("JWT_AUDIENCE"),
+			},
+		}
+	})
+
+	return cfg
 }
 
 func DNS(c *PostgresConfig) string {

@@ -25,11 +25,12 @@ type Handler struct {
 	config *config.Config
 }
 
-func NewHandler(authService *AuthService, jwtService token.TokenRepository, config *config.Config) *Handler {
+func NewHandler(authService *AuthService, jwtService token.TokenRepository) *Handler {
+	cfg := config.LoadConfigFromEnv()
 	return &Handler{
 		authService: authService,
 		jwtService: jwtService,
-		config: config,
+		config: cfg,
 	}
 }
 
