@@ -28,13 +28,12 @@ func NewJWTTokenRepository(privateKey *rsa.PrivateKey, publicKey *rsa.PublicKey)
 func (r *JWTTokenRepository) CreateToken(accessPayload *tokenDomain.AccessTokenClaim, refreshPayload *tokenDomain.RefreshTokenClaim) (*tokenDomain.TokenPayload, error) {
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodRS256, accessPayload)
 	signedAccessToken, err := accessToken.SignedString(r.privateKey)
-
 	if err != nil {
 		return nil, err
 	}
 
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodRS256, refreshPayload)
-	signedRefreshToken, err := refreshToken.SignedString(r.privateKey)	
+	signedRefreshToken, err := refreshToken.SignedString(r.privateKey)
 	if err != nil {
 		return nil, err
 	}

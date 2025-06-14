@@ -69,7 +69,7 @@ func (s *AuthService) VerifyToken(ctx context.Context, payload *VerifyTokenPaylo
 	}
 
 	return &VerifyTokenResponse{
-		IsValid:    response.IsValid,
-		UserUUID:   response.UserUuid,
+		IsValid:  response.IsValid,
+		UserUUID: response.UserUuid,
 	}, nil
-} 
+}

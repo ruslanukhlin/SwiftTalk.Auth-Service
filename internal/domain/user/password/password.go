@@ -3,7 +3,7 @@ package password
 import "errors"
 
 var (
-	ErrPasswordEmpty = errors.New("пароль не может быть пустым")
+	ErrPasswordEmpty    = errors.New("пароль не может быть пустым")
 	ErrPasswordTooShort = errors.New("пароль должен быть не менее 8 символов")
 
 	ErrInvalidPassword = errors.New("неверный email или пароль")

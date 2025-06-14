@@ -12,12 +12,12 @@ import (
 )
 
 var (
-	ErrPasswordTooShort = status.Error(codes.InvalidArgument, passwordDomain.ErrPasswordTooShort.Error())
-	ErrPasswordEmpty = status.Error(codes.InvalidArgument, passwordDomain.ErrPasswordEmpty.Error())
-	ErrInvalidPassword = status.Error(codes.InvalidArgument, passwordDomain.ErrInvalidPassword.Error())
+	ErrPasswordTooShort   = status.Error(codes.InvalidArgument, passwordDomain.ErrPasswordTooShort.Error())
+	ErrPasswordEmpty      = status.Error(codes.InvalidArgument, passwordDomain.ErrPasswordEmpty.Error())
+	ErrInvalidPassword    = status.Error(codes.InvalidArgument, passwordDomain.ErrInvalidPassword.Error())
 	ErrEmailAlreadyExists = status.Error(codes.AlreadyExists, user.ErrEmailAlreadyExists.Error())
-	ErrInvalidEmail = status.Error(codes.InvalidArgument, user.ErrInvalidEmail.Error())
-	ErrInternal = status.Error(codes.Internal, "Внутренняя ошибка сервера")
+	ErrInvalidEmail       = status.Error(codes.InvalidArgument, user.ErrInvalidEmail.Error())
+	ErrInternal           = status.Error(codes.Internal, "Внутренняя ошибка сервера")
 )
 
 type UserGRPCHandler struct {
@@ -78,7 +78,7 @@ func (h *UserGRPCHandler) VerifyToken(ctx context.Context, req *pb.VerifyTokenRe
 	}
 
 	return &pb.VerifyTokenResponse{
-		IsValid: true,
+		IsValid:  true,
 		UserUuid: user.UUID,
 	}, nil
 }

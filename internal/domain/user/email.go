@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	ErrInvalidEmail = errors.New("не корректный email")
+	ErrInvalidEmail       = errors.New("не корректный email")
 	ErrEmailAlreadyExists = errors.New("email уже существует")
 )
 

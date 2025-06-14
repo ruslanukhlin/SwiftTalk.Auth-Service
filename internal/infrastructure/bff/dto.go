@@ -24,6 +24,6 @@ type VerifyTokenPayload struct {
 }
 
 type VerifyTokenResponse struct {
-	IsValid bool `json:"is_valid"`
+	IsValid  bool   `json:"is_valid"`
 	UserUUID string `json:"user_uuid"`
 }

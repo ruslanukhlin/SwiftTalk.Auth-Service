@@ -10,18 +10,20 @@ import (
 var _ AuthService = &AuthApp{}
 
 type AuthApp struct {
-	userRepo userDomain.UserRepository
+	userRepo     userDomain.UserRepository
 	passwordRepo passwordDomain.PasswordRepository
-	tokenRepo tokenDomain.TokenRepository
-	cfg *config.Config
+	tokenRepo    tokenDomain.TokenRepository
+	cfg          *config.Config
 }
 
-func NewAuthApp(userRepo userDomain.UserRepository, passwordRepo passwordDomain.PasswordRepository, tokenRepo tokenDomain.TokenRepository, cfg *config.Config) *AuthApp {
+func NewAuthApp(userRepo userDomain.UserRepository, passwordRepo passwordDomain.PasswordRepository, tokenRepo tokenDomain.TokenRepository) *AuthApp {
+	cfg := config.LoadConfigFromEnv()
+
 	return &AuthApp{
-		userRepo: userRepo,
+		userRepo:     userRepo,
 		passwordRepo: passwordRepo,
-		tokenRepo: tokenRepo,
-		cfg: cfg,
+		tokenRepo:    tokenRepo,
+		cfg:          cfg,
 	}
 }
 
@@ -38,7 +40,7 @@ func (a *AuthApp) Register(email, password string) (tokens *tokenDomain.TokenPay
 
 	accessPayload := tokenDomain.NewAccessTokenClaim(user.UUID, a.cfg)
 	refreshPayload := tokenDomain.NewRefreshTokenClaim(user.UUID, a.cfg)
-	
+
 	tokens, err = a.tokenRepo.CreateToken(accessPayload, refreshPayload)
 	if err != nil {
 		return nil, err
@@ -56,10 +58,10 @@ func (a *AuthApp) Login(email, password string) (tokens *tokenDomain.TokenPayloa
 	if err := passwordDomain.ComparePassword(password, user.Password.Value, a.passwordRepo); err != nil {
 		return nil, err
 	}
-	
+
 	accessPayload := tokenDomain.NewAccessTokenClaim(user.UUID, a.cfg)
 	refreshPayload := tokenDomain.NewRefreshTokenClaim(user.UUID, a.cfg)
-	
+
 	tokens, err = a.tokenRepo.CreateToken(accessPayload, refreshPayload)
 	if err != nil {
 		return nil, err
@@ -74,7 +76,7 @@ func (a *AuthApp) VerifyToken(accessToken string) (user *userDomain.User, err er
 		return nil, err
 	}
 
-	user, err = a.userRepo.GetUserByUUID(accessPayload.RegisteredClaims.Subject)
+	user, err = a.userRepo.GetUserByUUID(accessPayload.Subject)
 	if err != nil {
 		return nil, err
 	}
@@ -87,15 +89,15 @@ func (a *AuthApp) RefreshToken(refreshToken string) (tokens *tokenDomain.TokenPa
 	if err != nil {
 		return nil, err
 	}
-	
-	user, err := a.userRepo.GetUserByUUID(refreshParsed.RegisteredClaims.Subject)
+
+	user, err := a.userRepo.GetUserByUUID(refreshParsed.Subject)
 	if err != nil {
 		return nil, err
 	}
 
 	accessPayload := tokenDomain.NewAccessTokenClaim(user.UUID, a.cfg)
 	refreshPayload := tokenDomain.NewRefreshTokenClaim(user.UUID, a.cfg)
-	
+
 	tokens, err = a.tokenRepo.CreateToken(accessPayload, refreshPayload)
 	if err != nil {
 		return nil, err

@@ -6,8 +6,8 @@ import (
 )
 
 var _ password.PasswordRepository = &passwordRepo{}
-	
-type passwordRepo struct {}
+
+type passwordRepo struct{}
 
 func NewPasswordRepo() *passwordRepo {
 	return &passwordRepo{}
@@ -15,12 +15,11 @@ func NewPasswordRepo() *passwordRepo {
 
 func (r *passwordRepo) HashPassword(password password.Password) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password.Value), bcrypt.DefaultCost)
-
 	if err != nil {
 		return "", err
-	}	
-	
-	return string(hashedPassword), nil	
+	}
+
+	return string(hashedPassword), nil
 }
 
 func (r *passwordRepo) ComparePassword(password string, hash string) error {

@@ -2,9 +2,7 @@ package password
 
 import "errors"
 
-var (
-	ErrHashPassword = errors.New("ошибка хеширования пароля")
-)
+var ErrHashPassword = errors.New("ошибка хеширования пароля")
 
 type HashPassword struct {
 	Value string
@@ -12,7 +10,6 @@ type HashPassword struct {
 
 func NewHashPassword(password Password, passwordRepo PasswordRepository) (*HashPassword, error) {
 	hashPassword, err := passwordRepo.HashPassword(password)
-
 	if err != nil {
 		return nil, ErrHashPassword
 	}

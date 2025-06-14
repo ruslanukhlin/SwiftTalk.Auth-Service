@@ -22,13 +22,13 @@ func NewPostgresMemoryRepository(db *gorm.DB) *PostgresMemoryRepository {
 
 func (r *PostgresMemoryRepository) CreateUser(user *user.User) error {
 	userDb := &User{
-		UUID: user.UUID,
-		Email: user.Email.Value,
-		Password: user.Password.Value,
+		UUID:      user.UUID,
+		Email:     user.Email.Value,
+		Password:  user.Password.Value,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 	}
-	
+
 	return r.db.Create(&userDb).Error
 }
 

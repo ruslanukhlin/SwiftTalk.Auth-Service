@@ -32,7 +32,7 @@ func NewUser(email string, password string, passwordRepo passwordDomain.Password
 	}
 
 	user := &User{
-		UUID:      uuid.New().String(),	
+		UUID:      uuid.New().String(),
 		Email:     *emailValid,
 		Password:  *hashPassword,
 		CreatedAt: time.Now(),

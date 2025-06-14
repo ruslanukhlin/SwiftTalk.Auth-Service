@@ -39,4 +39,4 @@ func handleGRPCError(c *fiber.Ctx, err error) error {
 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 		"error": err.Error(),
 	})
-} 
+}

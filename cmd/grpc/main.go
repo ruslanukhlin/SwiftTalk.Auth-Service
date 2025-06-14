@@ -3,6 +3,9 @@ package main
 import (
 	"log"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/config"
 	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/gorm"
@@ -17,7 +20,7 @@ import (
 )
 
 func main() {
-	cfg := config.LoadConfigFromEnv()	
+	cfg := config.LoadConfigFromEnv()
 
 	if err := gorm.InitDB(config.DNS(cfg.Postgres)); err != nil {
 		log.Fatalf("Ошибка инициализации базы данных: %v", err)
@@ -36,7 +39,7 @@ func main() {
 	passwordRepo := passwordRepo.NewPasswordRepo()
 	tokenRepo := jwtRepo.NewJWTTokenRepository(privateKey, publicKey)
 
-	authApp := authApp.NewAuthApp(userRepo, passwordRepo, tokenRepo, cfg)
+	authApp := authApp.NewAuthApp(userRepo, passwordRepo, tokenRepo)
 
 	runGRPCServer(authApp)
 }
@@ -44,7 +47,7 @@ func main() {
 func runGRPCServer(authApp authApp.AuthService) {
 	cfg := config.LoadConfigFromEnv()
 
-	lis, err := net.Listen("tcp", ":" + cfg.PortGrpc)
+	lis, err := net.Listen("tcp", ":"+cfg.PortGrpc)
 	if err != nil {
 		log.Fatalf("Ошибка запуска сервера: %v", err)
 	}
@@ -52,9 +55,18 @@ func runGRPCServer(authApp authApp.AuthService) {
 	userGRPCHandler := authGRPC.NewUserGRPCHandler(authApp)
 	grpcServer := grpc.NewServer()
 	pb.RegisterAuthServiceServer(grpcServer, userGRPCHandler)
-	defer grpcServer.GracefulStop()
 
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("Ошибка grpc сервера: %v", err)
-	}
+	go func() {
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Printf("Ошибка grpc сервера: %v", err)
+		}
+	}()
+
+	// Graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	<-quit
+
+	grpcServer.GracefulStop()
+	log.Println("Сервер успешно остановлен")
 }

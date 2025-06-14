@@ -12,14 +12,15 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 )
+
 var (
-	ErrParseJWTExpiresAt       = errors.New("failed to parse JWT_EXPIRES_AT duration")
-	ErrParseJWTRefreshExpiresAt = errors.New("failed to parse JWT_REFRESH_EXPIRES_AT duration") 
+	ErrParseJWTExpiresAt        = errors.New("failed to parse JWT_EXPIRES_AT duration")
+	ErrParseJWTRefreshExpiresAt = errors.New("failed to parse JWT_REFRESH_EXPIRES_AT duration")
 )
 
 var (
 	once sync.Once
-	cfg *Config
+	cfg  *Config
 )
 
 type PostgresConfig struct {
@@ -31,17 +32,17 @@ type PostgresConfig struct {
 }
 
 type JWTConfig struct {
-	SecretKey            string
-	ExpiresAfter         time.Duration
-	RefreshExpiresAfter  time.Duration
-	Issuer               string
-	Audience             string
+	SecretKey           string
+	ExpiresAfter        time.Duration
+	RefreshExpiresAfter time.Duration
+	Issuer              string
+	Audience            string
 }
 
 type Config struct {
 	Mode     string
-	PortGrpc     string
-	PortHttp     string
+	PortGrpc string
+	PortHttp string
 	Postgres *PostgresConfig
 	JWT      *JWTConfig
 }
@@ -62,8 +63,8 @@ func LoadConfigFromEnv() *Config {
 
 		cfg = &Config{
 			Mode:     os.Getenv("MODE"),
-			PortGrpc:     os.Getenv("PORT_GRPC"),
-			PortHttp:     os.Getenv("PORT_HTTP"),
+			PortGrpc: os.Getenv("PORT_GRPC"),
+			PortHttp: os.Getenv("PORT_HTTP"),
 			Postgres: &PostgresConfig{
 				Host:     os.Getenv("POSTGRES_HOST"),
 				Port:     os.Getenv("POSTGRES_PORT"),

@@ -11,7 +11,7 @@ import (
 
 var (
 	ErrInvalidRefreshToken = errors.New("refresh token не валидный")
-	ErrInvalidAccessToken = errors.New("access token не валидный")
+	ErrInvalidAccessToken  = errors.New("access token не валидный")
 )
 
 // ErrorResponse представляет ответ с ошибкой
@@ -21,16 +21,16 @@ type ErrorResponse struct {
 
 type Handler struct {
 	authService *AuthService
-	jwtService token.TokenRepository
-	config *config.Config
+	jwtService  token.TokenRepository
+	config      *config.Config
 }
 
 func NewHandler(authService *AuthService, jwtService token.TokenRepository) *Handler {
 	cfg := config.LoadConfigFromEnv()
 	return &Handler{
 		authService: authService,
-		jwtService: jwtService,
-		config: cfg,
+		jwtService:  jwtService,
+		config:      cfg,
 	}
 }
 
@@ -87,13 +87,13 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 	}
 
 	c.Cookie(&fiber.Cookie{
-		Name: "access_token",
-		Value: tokens.AccessToken,
+		Name:    "access_token",
+		Value:   tokens.AccessToken,
 		Expires: time.Now().Add(h.config.JWT.ExpiresAfter),
 	})
 	c.Cookie(&fiber.Cookie{
-		Name: "refresh_token",
-		Value: tokens.RefreshToken,
+		Name:    "refresh_token",
+		Value:   tokens.RefreshToken,
 		Expires: time.Now().Add(h.config.JWT.RefreshExpiresAfter),
 	})
 
@@ -126,13 +126,13 @@ func (h *Handler) RefreshToken(c *fiber.Ctx) error {
 	}
 
 	c.Cookie(&fiber.Cookie{
-		Name: "access_token",
-		Value: tokens.AccessToken,
+		Name:    "access_token",
+		Value:   tokens.AccessToken,
 		Expires: time.Now().Add(h.config.JWT.ExpiresAfter),
 	})
 	c.Cookie(&fiber.Cookie{
-		Name: "refresh_token",
-		Value: tokens.RefreshToken,
+		Name:    "refresh_token",
+		Value:   tokens.RefreshToken,
 		Expires: time.Now().Add(h.config.JWT.RefreshExpiresAfter),
 	})
 
@@ -168,13 +168,13 @@ func (h *Handler) VerifyToken(c *fiber.Ctx) error {
 }
 
 func (h *Handler) GetJWKS(c *fiber.Ctx) error {
-    jwks, err := h.jwtService.GetJWKS()
-    if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error": "Failed to get JWKS",
-        })
-    }
+	jwks, err := h.jwtService.GetJWKS()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get JWKS",
+		})
+	}
 
-    c.Set("Content-Type", "application/json")
-    return c.Send(jwks)
-} 
+	c.Set("Content-Type", "application/json")
+	return c.Send(jwks)
+}
