@@ -58,7 +58,7 @@ func (h *UserGRPCHandler) Login(ctx context.Context, req *pb.LoginRequest) (*pb.
 	tokens, err := h.authApp.Login(req.Email, req.Password)
 	if err != nil {
 		switch err {
-		case passwordDomain.ErrInvalidPassword:
+		case passwordDomain.ErrInvalidPassword, user.ErrUserNotFound:
 			return nil, ErrInvalidPassword
 		default:
 			return nil, ErrInternal

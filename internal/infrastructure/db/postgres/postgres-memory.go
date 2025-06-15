@@ -48,6 +48,9 @@ func (r *PostgresMemoryRepository) GetUserByEmail(email string) (*user.User, err
 	var userDb User
 
 	if err := r.db.Where("email = ?", email).First(&userDb).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, user.ErrUserNotFound
+		}
 		return nil, err
 	}
 
