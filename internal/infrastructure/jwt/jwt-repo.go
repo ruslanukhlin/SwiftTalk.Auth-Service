@@ -8,7 +8,7 @@ import (
 	"math/big"
 
 	"github.com/golang-jwt/jwt/v5"
-	tokenDomain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/token"
+	tokenDomain "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/token"
 )
 
 var _ tokenDomain.TokenRepository = &JWTTokenRepository{}

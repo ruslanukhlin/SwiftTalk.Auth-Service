@@ -3,8 +3,8 @@ package postgres
 import (
 	"errors"
 
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user"
-	passwordDomain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user/password"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/user"
+	passwordDomain "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/user/password"
 	"gorm.io/gorm"
 )
 

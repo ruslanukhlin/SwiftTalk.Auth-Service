@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/token"
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/config"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/token"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/pkg/config"
 )
 
 var (

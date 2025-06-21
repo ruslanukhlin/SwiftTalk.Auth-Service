@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/config"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/pkg/config"
 )
 
 type TokenType string

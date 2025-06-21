@@ -3,7 +3,7 @@ package bff
 import (
 	"context"
 
-	pb "github.com/ruslanukhlin/SwiftTalk.common/gen/auth"
+	pb "github.com/ruslanukhlin/SwiftTalk.Common/gen/auth"
 )
 
 type AuthService struct {

@@ -7,16 +7,16 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/config"
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/gorm"
-	pb "github.com/ruslanukhlin/SwiftTalk.common/gen/auth"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/pkg/config"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/pkg/gorm"
+	pb "github.com/ruslanukhlin/SwiftTalk.Common/gen/auth"
 	"google.golang.org/grpc"
 
-	authApp "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/application/auth"
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/db/postgres"
-	authGRPC "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/grpc"
-	jwtRepo "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/jwt"
-	passwordRepo "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/password"
+	authApp "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/application/auth"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/infrastructure/db/postgres"
+	authGRPC "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/infrastructure/grpc"
+	jwtRepo "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/infrastructure/jwt"
+	passwordRepo "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/infrastructure/password"
 )
 
 func main() {

@@ -1,8 +1,8 @@
 package authApp
 
 import (
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/token"
-	userDomain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/token"
+	userDomain "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/user"
 )
 
 type AuthService interface {

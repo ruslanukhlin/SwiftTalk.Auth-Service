@@ -3,10 +3,10 @@ package authGRPC
 import (
 	"context"
 
-	authApp "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/application/auth"
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user"
-	passwordDomain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user/password"
-	pb "github.com/ruslanukhlin/SwiftTalk.common/gen/auth"
+	authApp "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/application/auth"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/user"
+	passwordDomain "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/user/password"
+	pb "github.com/ruslanukhlin/SwiftTalk.Common/gen/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

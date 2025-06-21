@@ -1,7 +1,7 @@
 package passwordRepo
 
 import (
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user/password"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/user/password"
 	"golang.org/x/crypto/bcrypt"
 )
 

@@ -3,7 +3,7 @@ package main
 // @title SwiftTalk Auth Service API
 // @version 1.0
 // @description API сервиса аутентификации для платформы SwiftTalk
-// @host localhost:8080
+// @host localhost:5002
 // @BasePath /authService/
 import (
 	"log"
@@ -12,14 +12,15 @@ import (
 	"syscall"
 
 	"github.com/gofiber/fiber/v2"
-	_ "github.com/ruslanukhlin/SwiftTalk.auth-service/docs"
-	pb "github.com/ruslanukhlin/SwiftTalk.common/gen/auth"
+	_ "github.com/ruslanukhlin/SwiftTalk.Auth-service/docs"
+	pb "github.com/ruslanukhlin/SwiftTalk.Common/gen/auth"
+	fiberSwagger "github.com/swaggo/fiber-swagger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/bff"
-	jwtRepo "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/infrastructure/jwt"
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/config"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/infrastructure/bff"
+	jwtRepo "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/infrastructure/jwt"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/pkg/config"
 )
 
 func main() {
@@ -32,6 +33,7 @@ func main() {
 
 	// Перемещаем defer после всех инициализаций
 	server := fiber.New()
+	server.Get("/swagger/*", fiberSwagger.FiberWrapHandler())
 	authClient := pb.NewAuthServiceClient(conn)
 	privateKey, publicKey, err := config.ParseKeys()
 	if err != nil {

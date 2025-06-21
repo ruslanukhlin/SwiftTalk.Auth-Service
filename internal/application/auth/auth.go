@@ -1,10 +1,10 @@
 package authApp
 
 import (
-	tokenDomain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/token"
-	userDomain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user"
-	passwordDomain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user/password"
-	"github.com/ruslanukhlin/SwiftTalk.auth-service/pkg/config"
+	tokenDomain "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/token"
+	userDomain "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/user"
+	passwordDomain "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/user/password"
+	"github.com/ruslanukhlin/SwiftTalk.Auth-service/pkg/config"
 )
 
 var _ AuthService = &AuthApp{}

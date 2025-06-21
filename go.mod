@@ -1,19 +1,19 @@
-module github.com/ruslanukhlin/SwiftTalk.auth-service
+module github.com/ruslanukhlin/SwiftTalk.Auth-service
 
-go 1.24.3
+go 1.24.4
 
 require (
 	github.com/go-playground/validator/v10 v10.26.0
 	github.com/gofiber/fiber/v2 v2.52.8
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/uuid v1.6.0
-	github.com/ruslanukhlin/SwiftTalk.common v0.0.2
 	github.com/swaggo/fiber-swagger v1.3.0
 	github.com/swaggo/swag v1.16.4
 	golang.org/x/crypto v0.39.0
+	github.com/ruslanukhlin/SwiftTalk.Common v0.0.2
 )
 
-replace github.com/ruslanukhlin/SwiftTalk.common => ../common
+// replace github.com/ruslanukhlin/SwiftTalk.common => ../common
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect

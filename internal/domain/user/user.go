@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	passwordDomain "github.com/ruslanukhlin/SwiftTalk.auth-service/internal/domain/user/password"
+	passwordDomain "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/user/password"
 )
 
 type User struct {
