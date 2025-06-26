@@ -24,6 +24,7 @@ func (r *PostgresMemoryRepository) CreateUser(user *user.User) error {
 	userDb := &User{
 		UUID:      user.UUID,
 		Email:     user.Email.Value,
+		Username:  user.Username.Value,
 		Password:  user.Password.Value,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
@@ -77,6 +78,9 @@ func getUserFromDb(userDb User) *user.User {
 		UUID: userDb.UUID,
 		Email: user.Email{
 			Value: userDb.Email,
+		},
+		Username: user.UserName{
+			Value: userDb.Username,
 		},
 		Password: passwordDomain.HashPassword{
 			Value: userDb.Password,

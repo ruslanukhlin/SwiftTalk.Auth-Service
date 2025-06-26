@@ -27,8 +27,8 @@ func NewAuthApp(userRepo userDomain.UserRepository, passwordRepo passwordDomain.
 	}
 }
 
-func (a *AuthApp) Register(email, password string) (tokens *tokenDomain.TokenPayload, err error) {
-	user, err := userDomain.NewUser(email, password, a.passwordRepo, a.userRepo)
+func (a *AuthApp) Register(email, username, password string) (tokens *tokenDomain.TokenPayload, err error) {
+	user, err := userDomain.NewUser(email, username, password, a.passwordRepo, a.userRepo)
 	if err != nil {
 		return nil, err
 	}

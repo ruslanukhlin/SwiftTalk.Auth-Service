@@ -2,6 +2,7 @@ package bff
 
 type RegisterPayload struct {
 	Email    string `json:"email"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
@@ -26,4 +27,6 @@ type VerifyTokenPayload struct {
 type VerifyTokenResponse struct {
 	IsValid  bool   `json:"is_valid"`
 	UserUUID string `json:"user_uuid"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
 }

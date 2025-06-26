@@ -4,7 +4,7 @@ package main
 // @version 1.0
 // @description API сервиса аутентификации для платформы SwiftTalk
 // @host localhost:5002
-// @BasePath /authService/
+// @BasePath /auth-service/
 import (
 	"log"
 	"os"
@@ -12,9 +12,9 @@ import (
 	"syscall"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
 	_ "github.com/ruslanukhlin/SwiftTalk.Auth-service/docs"
 	pb "github.com/ruslanukhlin/SwiftTalk.Common/gen/auth"
-	fiberSwagger "github.com/swaggo/fiber-swagger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -31,9 +31,20 @@ func main() {
 		log.Fatalf("Ошибка подключения к GRPC серверу: %v", err)
 	}
 
-	// Перемещаем defer после всех инициализаций
 	server := fiber.New()
-	server.Get("/swagger/*", fiberSwagger.FiberWrapHandler())
+
+	server.Get("/docs/docs.json", func(c *fiber.Ctx) error {
+		return c.SendFile("./docs/swagger-v3.json")
+	})
+
+	// OpenAPI 3.0 UI
+	server.Get("/docs/*", swagger.New(swagger.Config{
+		URL:          "docs.json",
+		DeepLinking:  true,
+		DocExpansion: "none",
+		Title:        "SwiftTalk Auth Service API (OpenAPI 3.0)",
+	}))
+
 	authClient := pb.NewAuthServiceClient(conn)
 	privateKey, publicKey, err := config.ParseKeys()
 	if err != nil {

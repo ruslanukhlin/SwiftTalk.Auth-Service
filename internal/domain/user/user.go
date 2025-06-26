@@ -10,12 +10,13 @@ import (
 type User struct {
 	UUID      string
 	Email     Email
+	Username  UserName
 	Password  passwordDomain.HashPassword
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
-func NewUser(email string, password string, passwordRepo passwordDomain.PasswordRepository, userRepo UserRepository) (*User, error) {
+func NewUser(email, username, password string, passwordRepo passwordDomain.PasswordRepository, userRepo UserRepository) (*User, error) {
 	emailValid, err := NewEmail(email, userRepo)
 	if err != nil {
 		return nil, err
@@ -31,9 +32,15 @@ func NewUser(email string, password string, passwordRepo passwordDomain.Password
 		return nil, err
 	}
 
+	usernameValid, err := NewUserName(username)
+	if err != nil {
+		return nil, err
+	}
+
 	user := &User{
 		UUID:      uuid.New().String(),
 		Email:     *emailValid,
+		Username:  *usernameValid,
 		Password:  *hashPassword,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

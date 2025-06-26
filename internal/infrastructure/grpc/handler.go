@@ -17,6 +17,8 @@ var (
 	ErrInvalidPassword    = status.Error(codes.InvalidArgument, passwordDomain.ErrInvalidPassword.Error())
 	ErrEmailAlreadyExists = status.Error(codes.AlreadyExists, user.ErrEmailAlreadyExists.Error())
 	ErrInvalidEmail       = status.Error(codes.InvalidArgument, user.ErrInvalidEmail.Error())
+	ErrUserNameRequired   = status.Error(codes.InvalidArgument, user.ErrUserNameRequired.Error())
+	ErrUserNameTooShort   = status.Error(codes.InvalidArgument, user.ErrUserNameTooShort.Error())
 	ErrInternal           = status.Error(codes.Internal, "Внутренняя ошибка сервера")
 )
 
@@ -32,7 +34,7 @@ func NewUserGRPCHandler(authApp authApp.AuthService) *UserGRPCHandler {
 }
 
 func (h *UserGRPCHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	tokens, err := h.authApp.Register(req.Email, req.Password)
+	tokens, err := h.authApp.Register(req.Email, req.Username, req.Password)
 	if err != nil {
 		switch err {
 		case user.ErrInvalidEmail:
@@ -43,6 +45,10 @@ func (h *UserGRPCHandler) Register(ctx context.Context, req *pb.RegisterRequest)
 			return nil, ErrPasswordTooShort
 		case passwordDomain.ErrPasswordEmpty:
 			return nil, ErrPasswordEmpty
+		case user.ErrUserNameRequired:
+			return nil, ErrUserNameRequired
+		case user.ErrUserNameTooShort:
+			return nil, ErrUserNameTooShort
 		default:
 			return nil, ErrInternal
 		}
@@ -80,6 +86,8 @@ func (h *UserGRPCHandler) VerifyToken(ctx context.Context, req *pb.VerifyTokenRe
 	return &pb.VerifyTokenResponse{
 		IsValid:  true,
 		UserUuid: user.UUID,
+		Username: user.Username.Value,
+		Email:    user.Email.Value,
 	}, nil
 }
 

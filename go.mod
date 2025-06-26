@@ -5,12 +5,12 @@ go 1.24.4
 require (
 	github.com/go-playground/validator/v10 v10.26.0
 	github.com/gofiber/fiber/v2 v2.52.8
+	github.com/gofiber/swagger v1.1.1
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/uuid v1.6.0
-	github.com/swaggo/fiber-swagger v1.3.0
+	github.com/ruslanukhlin/SwiftTalk.Common v0.0.3
 	github.com/swaggo/swag v1.16.4
 	golang.org/x/crypto v0.39.0
-	github.com/ruslanukhlin/SwiftTalk.Common v0.0.2
 )
 
 // replace github.com/ruslanukhlin/SwiftTalk.common => ../common
@@ -37,7 +37,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	github.com/swaggo/files v1.0.1 // indirect
+	github.com/swaggo/files/v2 v2.0.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.62.0 // indirect
 	golang.org/x/net v0.41.0 // indirect

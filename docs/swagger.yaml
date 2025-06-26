@@ -1,4 +1,4 @@
-basePath: /authService/
+basePath: /auth-service/
 definitions:
   bff.ErrorResponse:
     properties:
@@ -18,6 +18,8 @@ definitions:
         type: string
       password:
         type: string
+      username:
+        type: string
     type: object
   bff.TokenResponse:
     properties:
@@ -28,12 +30,16 @@ definitions:
     type: object
   bff.VerifyTokenResponse:
     properties:
+      email:
+        type: string
       is_valid:
         type: boolean
       user_uuid:
         type: string
+      username:
+        type: string
     type: object
-host: localhost:8080
+host: localhost:5002
 info:
   contact: {}
   description: API сервиса аутентификации для платформы SwiftTalk

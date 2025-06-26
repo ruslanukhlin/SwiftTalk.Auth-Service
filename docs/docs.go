@@ -212,6 +212,9 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -229,10 +232,16 @@ const docTemplate = `{
         "bff.VerifyTokenResponse": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string"
+                },
                 "is_valid": {
                     "type": "boolean"
                 },
                 "user_uuid": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -243,8 +252,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/authService/",
+	Host:             "localhost:5002",
+	BasePath:         "/auth-service/",
 	Schemes:          []string{},
 	Title:            "SwiftTalk Auth Service API",
 	Description:      "API сервиса аутентификации для платформы SwiftTalk",

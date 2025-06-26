@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -48,7 +49,7 @@ type Config struct {
 
 func LoadConfigFromEnv() *Config {
 	once.Do(func() {
-		// _ = godotenv.Load(".env.local")
+		_ = godotenv.Load(".env.prod")
 
 		expiresAfter, err := time.ParseDuration(os.Getenv("JWT_EXPIRES_AT"))
 		if err != nil {

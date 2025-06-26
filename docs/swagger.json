@@ -6,8 +6,8 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8080",
-    "basePath": "/authService/",
+    "host": "localhost:5002",
+    "basePath": "/auth-service/",
     "paths": {
         "/login": {
             "post": {
@@ -206,6 +206,9 @@
                 },
                 "password": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -223,10 +226,16 @@
         "bff.VerifyTokenResponse": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string"
+                },
                 "is_valid": {
                     "type": "boolean"
                 },
                 "user_uuid": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

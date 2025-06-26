@@ -19,6 +19,7 @@ func NewAuthService(client pb.AuthServiceClient) *AuthService {
 func (s *AuthService) Register(ctx context.Context, payload *RegisterPayload) (*TokenResponse, error) {
 	response, err := s.client.Register(ctx, &pb.RegisterRequest{
 		Email:    payload.Email,
+		Username: payload.Username,
 		Password: payload.Password,
 	})
 	if err != nil {
@@ -71,5 +72,7 @@ func (s *AuthService) VerifyToken(ctx context.Context, payload *VerifyTokenPaylo
 	return &VerifyTokenResponse{
 		IsValid:  response.IsValid,
 		UserUUID: response.UserUuid,
+		Username: response.Username,
+		Email:    response.Email,
 	}, nil
 }
