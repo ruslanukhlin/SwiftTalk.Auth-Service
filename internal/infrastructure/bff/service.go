@@ -3,6 +3,8 @@ package bff
 import (
 	"context"
 
+	"google.golang.org/grpc/metadata"
+
 	pb "github.com/ruslanukhlin/SwiftTalk.Common/gen/auth"
 )
 
@@ -48,9 +50,10 @@ func (s *AuthService) Login(ctx context.Context, payload *LoginPayload) (*TokenR
 }
 
 func (s *AuthService) RefreshToken(ctx context.Context, payload *RefreshTokenPayload) (*TokenResponse, error) {
-	response, err := s.client.RefreshToken(ctx, &pb.RefreshTokenRequest{
-		RefreshToken: payload.RefreshToken,
-	})
+	md := metadata.New(map[string]string{"authorization": payload.RefreshToken})
+	ctx = metadata.NewOutgoingContext(ctx, md)
+
+	response, err := s.client.RefreshToken(ctx, &pb.RefreshTokenRequest{})
 	if err != nil {
 		return nil, err
 	}
@@ -62,9 +65,10 @@ func (s *AuthService) RefreshToken(ctx context.Context, payload *RefreshTokenPay
 }
 
 func (s *AuthService) VerifyToken(ctx context.Context, payload *VerifyTokenPayload) (*VerifyTokenResponse, error) {
-	response, err := s.client.VerifyToken(ctx, &pb.VerifyTokenRequest{
-		AccessToken: payload.AccessToken,
-	})
+	md := metadata.New(map[string]string{"authorization": payload.AccessToken})
+	ctx = metadata.NewOutgoingContext(ctx, md)
+
+	response, err := s.client.VerifyToken(ctx, &pb.VerifyTokenRequest{})
 	if err != nil {
 		return nil, err
 	}

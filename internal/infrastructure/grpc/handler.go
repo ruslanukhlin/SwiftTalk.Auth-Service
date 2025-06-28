@@ -8,6 +8,7 @@ import (
 	passwordDomain "github.com/ruslanukhlin/SwiftTalk.Auth-service/internal/domain/user/password"
 	pb "github.com/ruslanukhlin/SwiftTalk.Common/gen/auth"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -20,6 +21,7 @@ var (
 	ErrUserNameRequired   = status.Error(codes.InvalidArgument, user.ErrUserNameRequired.Error())
 	ErrUserNameTooShort   = status.Error(codes.InvalidArgument, user.ErrUserNameTooShort.Error())
 	ErrInternal           = status.Error(codes.Internal, "Внутренняя ошибка сервера")
+	ErrUnauthorized       = status.Error(codes.Unauthenticated, "Не авторизован")
 )
 
 type UserGRPCHandler struct {
@@ -78,7 +80,17 @@ func (h *UserGRPCHandler) Login(ctx context.Context, req *pb.LoginRequest) (*pb.
 }
 
 func (h *UserGRPCHandler) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest) (*pb.VerifyTokenResponse, error) {
-	user, err := h.authApp.VerifyToken(req.AccessToken)
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, ErrUnauthorized
+	}
+
+	values := md.Get("authorization")
+	if len(values) == 0 {
+		return nil, ErrUnauthorized
+	}
+
+	user, err := h.authApp.VerifyToken(values[0])
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
@@ -92,7 +104,18 @@ func (h *UserGRPCHandler) VerifyToken(ctx context.Context, req *pb.VerifyTokenRe
 }
 
 func (h *UserGRPCHandler) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenResponse, error) {
-	tokens, err := h.authApp.RefreshToken(req.RefreshToken)
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, ErrUnauthorized
+	}
+
+	values := md.Get("authorization")
+	if len(values) == 0 {
+		return nil, ErrUnauthorized
+	}
+
+	refreshToken := values[0]
+	tokens, err := h.authApp.RefreshToken(refreshToken)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "%v", err)
 	}

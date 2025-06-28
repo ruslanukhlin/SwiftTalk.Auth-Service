@@ -8,7 +8,7 @@ require (
 	github.com/gofiber/swagger v1.1.1
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/uuid v1.6.0
-	github.com/ruslanukhlin/SwiftTalk.Common v0.0.3
+	github.com/ruslanukhlin/SwiftTalk.Common v0.0.4
 	github.com/swaggo/swag v1.16.4
 	golang.org/x/crypto v0.39.0
 )
